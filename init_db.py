@@ -9,10 +9,10 @@ with app.app_context():
     db.create_all()
 
     # Создание суперпользователя, если его нет
-    if not User.query.filter_by(username='Danderety').first():
+    if not User.query.filter_by(username='root').first():
         superuser = User(
-            username='Danderety',
-            password=generate_password_hash('88005553535!Kirillka12!'),
+            username='root',
+            password=generate_password_hash('root'),
             is_admin=True,
             is_super=True,
             admin_assigned_at=None
