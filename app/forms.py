@@ -8,25 +8,23 @@ class LoginForm(FlaskForm):
     password = PasswordField('Пароль', validators=[DataRequired()])
     submit = SubmitField('Войти')
 
-
 class RegisterForm(FlaskForm):
     username = StringField('Логин', validators=[DataRequired(), Length(min=3, max=25)])
     password = PasswordField('Пароль', validators=[DataRequired(), Length(min=6)])
-    confirm = PasswordField('Повторите пароль', validators=[
-        DataRequired(), EqualTo('password', message='Пароли не совпадают')])
+    confirm = PasswordField('Повторите пароль', validators=[DataRequired(), EqualTo('password')])
     submit = SubmitField('Зарегистрироваться')
 
-
 class SubmitTicketForm(FlaskForm):
-    room = StringField('Номер кабинета', validators=[DataRequired()])
-    category = SelectField('Категория', choices=[
+    room = StringField("Номер кабинета", validators=[DataRequired()])
+    category = SelectField("Категория", choices=[
         ('Принтер', 'Принтер'),
         ('Компьютер', 'Компьютер'),
         ('Смартфон', 'Смартфон'),
         ('Сеть', 'Сеть')
     ], validators=[DataRequired()])
-    problem = StringField('Проблема', validators=[DataRequired()])
-    attachment = FileField('Прикрепить фото', validators=[
+    problem = StringField("Проблема", validators=[DataRequired()])
+    attachment = FileField("Прикрепить фото", validators=[
         FileAllowed(['jpg', 'jpeg', 'png', 'gif'], 'Только изображения!')
     ])
-    submit = SubmitField('Отправить')
+    submit = SubmitField("Отправить")
+

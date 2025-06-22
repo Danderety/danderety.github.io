@@ -6,7 +6,6 @@ def parse_date(date_str):
     except ValueError:
         return None
 
-
 def filter_tickets(tickets, room=None, status=None, date_from=None, date_to=None):
     if room:
         tickets = [t for t in tickets if t.room == room]

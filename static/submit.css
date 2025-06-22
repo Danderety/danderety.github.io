@@ -1,0 +1,6 @@
+@import url("base.css");
+
+.container {
+    max-width: 600px;
+    margin-top: 20px;
+}

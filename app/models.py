@@ -7,7 +7,6 @@ from app import login_manager
 def load_user(user_id):
     return User.query.get(int(user_id))
 
-
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(64), unique=True, nullable=False)
@@ -15,12 +14,10 @@ class User(UserMixin, db.Model):
     is_admin = db.Column(db.Boolean, default=False)
     is_super = db.Column(db.Boolean, default=False)
     admin_assigned_at = db.Column(db.DateTime, nullable=True)
-
     tickets = db.relationship('Ticket', backref='author', lazy=True)
 
     def __repr__(self):
         return f'<User {self.username}>'
-
 
 class Ticket(db.Model):
     id = db.Column(db.Integer, primary_key=True)

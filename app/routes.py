@@ -11,12 +11,6 @@ import os
 routes_bp = Blueprint('routes_bp', __name__)
 
 
-@routes_bp.route('/')
-@login_required
-def index():
-    return render_template('index.html')
-
-
 @routes_bp.route('/login', methods=['GET', 'POST'])
 def login():
     form = LoginForm()
@@ -24,7 +18,9 @@ def login():
         user = User.query.filter_by(username=form.username.data).first()
         if user and check_password_hash(user.password, form.password.data):
             login_user(user)
-            return redirect(url_for('routes_bp.index'))
+            if user.is_admin:
+                return redirect(url_for('routes_bp.admin_panel'))
+            return redirect(url_for('routes_bp.submit_ticket'))
         flash('Неверный логин или пароль')
     return render_template('login.html', form=form)
 
@@ -61,7 +57,7 @@ def submit_ticket():
             form.attachment.data.save(save_path)
             attachment_path = filename
         ticket = Ticket(
-            room=form.room.data,
+            room=form.room.data,  # ✅ исправлено
             category=form.category.data,
             problem=form.problem.data,
             attachment=attachment_path,
@@ -81,7 +77,7 @@ def submit_ticket():
 def admin_panel():
     if not current_user.is_admin:
         flash('Доступ только для админов.')
-        return redirect(url_for('routes_bp.index'))
+        return redirect(url_for('routes_bp.submit_ticket'))
 
     tickets = Ticket.query.order_by(Ticket.timestamp.desc()).all()
 
@@ -89,8 +85,6 @@ def admin_panel():
         for ticket in tickets:
             if request.form.get(f'done_{ticket.id}'):
                 ticket.status = 'Выполнено'
-            if request.form.get(f'delete_{ticket.id}'):
-                db.session.delete(ticket)
         db.session.commit()
         return redirect(url_for('routes_bp.admin_panel'))
 
@@ -102,14 +96,14 @@ def admin_panel():
 def users():
     if not current_user.is_super:
         flash('Доступ запрещён.')
-        return redirect(url_for('routes_bp.index'))
+        return redirect(url_for('routes_bp.submit_ticket'))
 
     users = User.query.all()
 
     if request.method == 'POST':
         for user in users:
             if user.is_super:
-                continue  # нельзя снять права с суперпользователя
+                continue
 
             if f'delete_{user.id}' in request.form:
                 db.session.delete(user)

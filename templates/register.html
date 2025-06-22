@@ -1,29 +1,21 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <title>Регистрация</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='register.css') }}">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <meta charset="UTF-8">
+  <title>Регистрация</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='login.css') }}">
 </head>
-<body class="container py-5">
-    <h2 class="mb-4">Регистрация</h2>
-    <form method="POST" class="w-100" style="max-width: 400px;">
-        {{ form.hidden_tag() }}
-        <div class="mb-3">
-            {{ form.username.label(class_="form-label") }}
-            {{ form.username(class_="form-control") }}
-        </div>
-        <div class="mb-3">
-            {{ form.password.label(class_="form-label") }}
-            {{ form.password(class_="form-control") }}
-        </div>
-        <div class="mb-3">
-            {{ form.confirm_password.label(class_="form-label") }}
-            {{ form.confirm_password(class_="form-control") }}
-        </div>
-        {{ form.submit(class_="btn btn-primary") }}
+<body>
+  <div class="container">
+    <h2>Регистрация</h2>
+    <form method="POST">
+      {{ form.hidden_tag() }}
+      {{ form.username.label }} {{ form.username() }}
+      {{ form.password.label }} {{ form.password() }}
+      {{ form.confirm.label }} {{ form.confirm() }}
+      {{ form.submit() }}
     </form>
-    <p class="mt-3">Уже есть аккаунт? <a href="{{ url_for('routes.login') }}">Войти</a></p>
+    <p>Уже есть аккаунт? <a href="{{ url_for('routes_bp.login') }}">Войти</a></p>
+  </div>
 </body>
 </html>

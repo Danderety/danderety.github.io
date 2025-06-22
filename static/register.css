@@ -1,41 +1,6 @@
-body {
-    font-family: Arial, sans-serif;
-    font-size: 1.1rem;
-    padding: 3%;
-}
+@import url("base.css");
 
-form {
-    width: 100%;
-    max-width: 480px;
-    margin: 0 auto;
-}
-
-input, select, textarea, button {
-    width: 100%;
-    margin-bottom: 1rem;
-    font-size: 1.1rem;
-    padding: 0.7rem;
-    transition: all 0.3s ease;
-}
-
-input:focus, textarea:focus, select:focus {
-    border-color: #007bff;
-    box-shadow: 0 0 5px #007bff;
-}
-
-button:hover {
-    background-color: #007bff;
-    color: white;
-}
-
-@media (max-width: 768px) {
-    body {
-        font-size: 1.4rem;
-        padding: 5%;
-    }
-
-    input, select, textarea, button {
-        font-size: 1.4rem;
-        padding: 1rem;
-    }
+.container {
+    max-width: 400px;
+    margin-top: 10vh;
 }

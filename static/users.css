@@ -1,65 +1,23 @@
-body {
-    font-family: Arial, sans-serif;
-    padding: 2%;
-    font-size: 1.1rem;
-    background-color: #f9f9f9;
-}
+@import url("base.css");
 
-h2 {
-    margin-bottom: 1rem;
-}
-
-table {
+.user-table {
     width: 100%;
     border-collapse: collapse;
-    background-color: #fff;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    margin-top: 20px;
 }
 
-th, td {
-    border: 1px solid #ddd;
-    padding: 0.75em;
-    text-align: center;
-}
-
-th {
-    background-color: #f0f0f0;
-    font-weight: bold;
-}
-
-input[type="password"], input[type="text"] {
-    padding: 0.3em;
+.user-table th, .user-table td {
     border: 1px solid #ccc;
-    border-radius: 4px;
-    width: 140px;
+    padding: 8px;
+    text-align: left;
 }
 
-button {
-    padding: 0.6em 1.2em;
-    font-size: 1rem;
-    border: none;
-    border-radius: 6px;
-    background-color: #4CAF50;
-    color: white;
-    cursor: pointer;
-    margin-top: 1rem;
+.user-table th {
+    background-color: #f5f5f5;
 }
 
-button:hover {
-    background-color: #45a049;
-}
-
-.flash {
-    margin-top: 1em;
-    padding: 0.5em;
-    background-color: #d4edda;
-    color: #155724;
-    border: 1px solid #c3e6cb;
-    border-radius: 4px;
-}
-
-.password-toggle {
-    cursor: pointer;
-    color: #007bff;
-    margin-left: 0.5em;
+.user-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
 }

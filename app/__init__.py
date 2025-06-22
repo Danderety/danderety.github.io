@@ -3,7 +3,6 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 
-# Конфигурация
 basedir = os.path.abspath(os.path.dirname(__file__))
 
 class Config:
@@ -12,7 +11,6 @@ class Config:
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     UPLOAD_FOLDER = os.path.join('static', 'attachments')
 
-# Инициализация
 db = SQLAlchemy()
 login_manager = LoginManager()
 login_manager.login_view = 'routes_bp.login'

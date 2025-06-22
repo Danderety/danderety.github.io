@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Отправка тикета</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='submit.css') }}">
+</head>
+<body>
+  <div class="container">
+    <h2>Сообщить о проблеме</h2>
+
+    <!-- ⚡ Сообщения об успехе/ошибке -->
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        {% for message in messages %}
+          <div class="flash flash-success">{{ message }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <!-- 🔧 Форма отправки -->
+    <form method="POST" enctype="multipart/form-data">
+      {{ form.hidden_tag() }}
+
+      {{ form.room.label }} {{ form.room() }}
+      {{ form.category.label }} {{ form.category() }}
+      {{ form.problem.label }} {{ form.problem() }}
+      {{ form.attachment.label }} {{ form.attachment() }}
+
+      {{ form.submit() }}
+    </form>
+
+    <p><a href="{{ url_for('routes_bp.logout') }}">Выйти</a></p>
+  </div>
+</body>
+</html>
