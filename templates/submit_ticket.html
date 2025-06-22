@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Отправка заявки</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='submit_ticket.css') }}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="container py-5">
+    <h2 class="mb-4">Форма отправки заявки</h2>
+    <form method="POST" class="w-100" style="max-width: 600px;">
+        {{ form.hidden_tag() }}
+        <div class="mb-3">
+            {{ form.room_number.label(class_="form-label") }}
+            {{ form.room_number(class_="form-control") }}
+        </div>
+        <div class="mb-3">
+            {{ form.category.label(class_="form-label") }}
+            {{ form.category(class_="form-select") }}
+        </div>
+        <div class="mb-3">
+            {{ form.issues.label(class_="form-label") }}
+            {{ form.issues(class_="form-control", rows=3) }}
+        </div>
+        <div class="mb-3">
+            {{ form.comment.label(class_="form-label") }}
+            {{ form.comment(class_="form-control", rows=3) }}
+        </div>
+        {{ form.submit(class_="btn btn-success") }}
+    </form>
+    <div class="mt-4">
+        <a href="{{ url_for('logout') }}">Выйти</a> |
+        {% if current_user.role == 'admin' %}
+        <a href="{{ url_for('admin_panel') }}">Админ-панель</a>
+        {% endif %}
+    </div>
+</body>
+</html>
