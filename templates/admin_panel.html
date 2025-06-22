@@ -6,55 +6,110 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='admin_panel.css') }}">
 </head>
 <body>
+  {% include 'topbar.html' %}
+
   <div class="container">
     <h2>Админ-панель</h2>
+    <input type="text" id="search-input" placeholder="Поиск..." class="search-input">
+    <button onclick="deleteTickets('now')">Удалить</button>
 
-    <form method="POST">
-      <table class="ticket-table">
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Кабинет</th>
-            <th>Категория</th>
-            <th>Проблема</th>
-            <th>Дата</th>
-            <th>Вложение</th>
-            <th>Выполнено</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for ticket in tickets %}
-          <tr>
-            <td>{{ ticket.id }}</td>
-            <td>{{ ticket.room }}</td>
-            <td>{{ ticket.category }}</td>
-            <td>
-              {% if ticket.problem|length > 100 %}
-                {{ ticket.problem[:100] }}...
-                <a href="#" onclick="alert(`{{ ticket.problem|e }}`)">Показать</a>
-              {% else %}
-                {{ ticket.problem }}
-              {% endif %}
-            </td>
-            <td>{{ ticket.timestamp.strftime('%Y-%m-%d %H:%M') }}</td>
-            <td>
-              {% if ticket.attachment %}
-              <a class="attachment-link" href="{{ url_for('routes_bp.uploaded_file', filename=ticket.attachment) }}" target="_blank">📎</a>
-              {% else %}
-              —
-              {% endif %}
-            </td>
-            <td>
-              <input type="checkbox" name="done_{{ ticket.id }}" {% if ticket.status == 'Выполнено' %}checked{% endif %}>
-            </td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-      <button type="submit">Сохранить</button>
-    </form>
+    <!-- ✅ Боковая панель с кнопками удаления -->
+    <div class="delete-panel" id="delete-panel" style="display: none;">
+      
 
-    <p><a href="{{ url_for('routes_bp.logout') }}">Выйти</a></p>
+    </div>
+
+    <table class="ticket-table">
+      <thead>
+        <tr>
+          <th>Удалить</th>
+          <th>Кабинет</th>
+          <th>Категория</th>
+          <th>Проблема</th>
+          <th>Дата</th>
+          <th>Выполнено</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for ticket in tickets %}
+        <tr>
+          <td>
+            <input type="checkbox" class="delete-checkbox" data-id="{{ ticket.id }}">
+          </td>
+          <td>{{ ticket.room }}</td>
+          <td>{{ ticket.category }}</td>
+          <td>
+            {% if ticket.problem|length > 100 %}
+              {{ ticket.problem[:100] }}...
+              <a href="#" onclick="alert(`{{ ticket.problem|e }}`)">Показать</a>
+            {% else %}
+              {{ ticket.problem }}
+            {% endif %}
+          </td>
+          <td>{{ ticket.timestamp.strftime('%Y-%m-%d %H:%M') }}</td>
+          <td>
+            <input type="checkbox"
+                   class="done-checkbox"
+                   data-id="{{ ticket.id }}"
+                   {% if ticket.status == 'Выполнено' %}checked{% endif %}>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
   </div>
+
+  <script>
+    // ✅ Автосохранение "Выполнено"
+    document.querySelectorAll('.done-checkbox').forEach(box => {
+      box.addEventListener('change', async () => {
+        const id = box.getAttribute('data-id');
+        const checked = box.checked;
+        await fetch(`/admin/toggle_done/${id}`, {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({ done: checked })
+        });
+      });
+    });
+
+    // ✅ Отображение панели удаления
+    const deletePanel = document.getElementById('delete-panel');
+    const deleteCheckboxes = document.querySelectorAll('.delete-checkbox');
+
+    deleteCheckboxes.forEach(cb => {
+      cb.addEventListener('change', () => {
+        const anyChecked = [...deleteCheckboxes].some(c => c.checked);
+        deletePanel.style.display = anyChecked ? 'flex' : 'none';
+      });
+    });
+
+    // ✅ Обработка удаления
+    async function deleteTickets(action) {
+      const ids = [...deleteCheckboxes]
+        .filter(cb => cb.checked)
+        .map(cb => cb.getAttribute('data-id'));
+
+      if (ids.length === 0) return;
+
+      await fetch('/admin/delete_tickets', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ ids, action })
+      });
+
+      window.location.reload();
+    }
+    document.getElementById('search-input').addEventListener('input', function () {
+    const filter = this.value.toLowerCase();
+    const rows = document.querySelectorAll('.ticket-table tbody tr');
+
+    rows.forEach(row => {
+        const text = row.innerText.toLowerCase();
+        row.style.display = text.includes(filter) ? '' : 'none';
+    });
+    });
+    
+  </script>
 </body>
 </html>

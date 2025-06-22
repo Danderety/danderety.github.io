@@ -18,7 +18,7 @@ body {
 }
 
 /* === ЗАГОЛОВКИ === */
-h1, h2 {
+h1, h2 ,h3{
     color: #2F80ED; /* Синий цвет акцентов */
 }
 
@@ -49,6 +49,7 @@ button,
     background-color: #2F80ED; /* Основной синий */
     color: white;
     padding: 10px 18px;
+    height: -10px;
     border: none;
     border-radius: 8px;
     cursor: pointer;
@@ -86,6 +87,42 @@ label {
     font-weight: 600;
     margin-bottom: 5px;
     display: inline-block;
+}
+.topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    background-color: #f0f0f0;
+    font-size: 1rem;
+    margin-bottom: 20px;
+}
+
+.topbar a {
+    text-decoration: none;
+    margin-right: 15px;
+    color: #2F80ED;
+    font-weight: bold;
+}
+
+.topbar a.logout-btn {
+    background-color: #eb5757;
+    color: white;
+    padding: 6px 12px;
+    border-radius: 6px;
+}
+
+.topbar a.logout-btn:hover {
+    background-color: #c0392b;
+}
+
+.topbar .username {
+    margin-right: 10px;
+    font-weight: bold;
+}
+
+.left-links a {
+    margin-right: 10px;
 }
 
 /* === МЕДИА-ЗАПРОС ДЛЯ АДАПТИВНОСТИ === */

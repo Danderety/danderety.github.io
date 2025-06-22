@@ -1,0 +1,19 @@
+<div class="topbar">
+  <div class="left-links">
+    {% if current_user.is_authenticated %}
+      {% if current_user.is_admin %}
+        <a href="{{ url_for('routes_bp.admin_panel') }}">Админ-панель</a>
+      {% endif %}
+      {% if current_user.is_super %}
+        <a href="{{ url_for('routes_bp.users') }}">Пользователи</a>
+      {% endif %}
+    {% endif %}
+  </div>
+
+  <div class="right-links">
+    {% if current_user.is_authenticated %}
+      <span class="username">{{ current_user.username }}</span>
+      <a class="logout-btn" href="{{ url_for('routes_bp.logout') }}">Выйти</a>
+    {% endif %}
+  </div>
+</div>

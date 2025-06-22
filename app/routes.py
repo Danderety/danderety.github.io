@@ -1,12 +1,10 @@
-from flask import Blueprint, render_template, redirect, url_for, request, flash, send_from_directory
+from flask import Blueprint, render_template, redirect, url_for, request, flash, jsonify
 from flask_login import login_user, logout_user, login_required, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
-from werkzeug.utils import secure_filename
-from datetime import datetime
+from datetime import datetime, timedelta
 from app import db
 from app.models import User, Ticket
 from app.forms import LoginForm, RegisterForm, SubmitTicketForm
-import os
 
 routes_bp = Blueprint('routes_bp', __name__)
 
@@ -21,7 +19,7 @@ def login():
             if user.is_admin:
                 return redirect(url_for('routes_bp.admin_panel'))
             return redirect(url_for('routes_bp.submit_ticket'))
-        flash('Неверный логин или пароль')
+       
     return render_template('login.html', form=form)
 
 
@@ -49,53 +47,76 @@ def logout():
 @login_required
 def submit_ticket():
     form = SubmitTicketForm()
+
     if form.validate_on_submit():
-        attachment_path = None
-        if form.attachment.data:
-            filename = secure_filename(form.attachment.data.filename)
-            save_path = os.path.join('static', 'attachments', filename)
-            form.attachment.data.save(save_path)
-            attachment_path = filename
         ticket = Ticket(
-            room=form.room.data,  # ✅ исправлено
+            room=form.room.data,
             category=form.category.data,
             problem=form.problem.data,
-            attachment=attachment_path,
             timestamp=datetime.utcnow(),
             status='Открыт',
             user_id=current_user.id
         )
         db.session.add(ticket)
         db.session.commit()
-        flash('Проблема отправлена.')
+        flash('Тикет отправлен')
         return redirect(url_for('routes_bp.submit_ticket'))
-    return render_template('submit.html', form=form)
+
+    my_tickets = Ticket.query.filter_by(user_id=current_user.id).order_by(Ticket.timestamp.desc()).limit(10).all()
+    return render_template('submit.html', form=form, my_tickets=my_tickets)
 
 
-@routes_bp.route('/admin', methods=['GET', 'POST'])
+
+@routes_bp.route('/admin', methods=['GET'])
 @login_required
 def admin_panel():
     if not current_user.is_admin:
-        flash('Доступ только для админов.')
+        flash('Доступ запрещен')
         return redirect(url_for('routes_bp.submit_ticket'))
 
     tickets = Ticket.query.order_by(Ticket.timestamp.desc()).all()
-
-    if request.method == 'POST':
-        for ticket in tickets:
-            if request.form.get(f'done_{ticket.id}'):
-                ticket.status = 'Выполнено'
-        db.session.commit()
-        return redirect(url_for('routes_bp.admin_panel'))
-
     return render_template('admin_panel.html', tickets=tickets)
+
+
+@routes_bp.route('/admin/toggle_done/<int:ticket_id>', methods=['POST'])
+@login_required
+def toggle_done(ticket_id):
+    if not current_user.is_admin:
+        return '', 403
+
+    data = request.get_json()
+    ticket = Ticket.query.get_or_404(ticket_id)
+    ticket.status = 'Выполнено' if data.get('done') else 'Открыт'
+    db.session.commit()
+    return '', 204
+
+
+@routes_bp.route('/admin/delete_tickets', methods=['POST'])
+@login_required
+def delete_tickets():
+    if not current_user.is_admin:
+        return '', 403
+
+    data = request.get_json()
+    ids = data.get('ids', [])
+    action = data.get('action')
+
+    for ticket_id in ids:
+        ticket = Ticket.query.get(ticket_id)
+        if not ticket:
+            continue
+
+        if action == 'now':
+            db.session.delete(ticket)
+    db.session.commit()
+    return '', 204
 
 
 @routes_bp.route('/users', methods=['GET', 'POST'])
 @login_required
 def users():
     if not current_user.is_super:
-        flash('Доступ запрещён.')
+        flash('Доступ запрещён')
         return redirect(url_for('routes_bp.submit_ticket'))
 
     users = User.query.all()
@@ -126,8 +147,3 @@ def users():
         return redirect(url_for('routes_bp.users'))
 
     return render_template('users.html', users=users)
-
-
-@routes_bp.route('/uploads/<filename>')
-def uploaded_file(filename):
-    return send_from_directory(os.path.join('static', 'attachments'), filename)

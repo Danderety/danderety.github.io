@@ -4,14 +4,19 @@ from wtforms.validators import DataRequired, Length, EqualTo
 from flask_wtf.file import FileAllowed
 
 class LoginForm(FlaskForm):
-    username = StringField('Логин', validators=[DataRequired()])
-    password = PasswordField('Пароль', validators=[DataRequired()])
+    username = StringField('Логин', validators=[DataRequired()],
+                    render_kw={"placeholder": "Введите логин"})
+    password = PasswordField("Пароль", validators=[DataRequired()],
+                             render_kw={"placeholder": "Введите пароль"})
     submit = SubmitField('Войти')
 
 class RegisterForm(FlaskForm):
-    username = StringField('Логин', validators=[DataRequired(), Length(min=3, max=25)])
-    password = PasswordField('Пароль', validators=[DataRequired(), Length(min=6)])
-    confirm = PasswordField('Повторите пароль', validators=[DataRequired(), EqualTo('password')])
+    username = StringField('Логин', validators=[DataRequired(), Length(min=3, max=25)],
+    render_kw={"placeholder": "Введите логин"})
+    password = PasswordField('Пароль', validators=[DataRequired(), Length(min=6)],
+    render_kw={"placeholder": "Введите пароль"})
+    confirm = PasswordField('Повторите пароль', validators=[DataRequired(), EqualTo('password')],
+    render_kw={"placeholder": "Повторите пароль"})
     submit = SubmitField('Зарегистрироваться')
 
 class SubmitTicketForm(FlaskForm):
@@ -20,11 +25,11 @@ class SubmitTicketForm(FlaskForm):
         ('Принтер', 'Принтер'),
         ('Компьютер', 'Компьютер'),
         ('Смартфон', 'Смартфон'),
-        ('Сеть', 'Сеть')
+        ('Интернет', 'Интернет'),
+        ('Доска', 'Доска'),
+        ('Проектор', 'Проектор'),
+        ('Иное', 'Иное'),
     ], validators=[DataRequired()])
     problem = StringField("Проблема", validators=[DataRequired()])
-    attachment = FileField("Прикрепить фото", validators=[
-        FileAllowed(['jpg', 'jpeg', 'png', 'gif'], 'Только изображения!')
-    ])
     submit = SubmitField("Отправить")
 

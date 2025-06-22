@@ -6,31 +6,54 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='submit.css') }}">
 </head>
 <body>
-  <div class="container">
-    <h2>Сообщить о проблеме</h2>
+  {% include 'topbar.html' %}
 
-    <!-- ⚡ Сообщения об успехе/ошибке -->
-    {% with messages = get_flashed_messages() %}
-      {% if messages %}
-        {% for message in messages %}
-          <div class="flash flash-success">{{ message }}</div>
+  <div class="main-container">
+    <div class="left-form card">
+      <h2>Сообщить о проблеме</h2>
+
+      {% with messages = get_flashed_messages() %}
+        {% if messages %}
+          {% for message in messages %}
+            <div class="flash flash-success">{{ message }}</div>
+          {% endfor %}
+        {% endif %}
+      {% endwith %}
+
+      <form method="POST">
+        {{ form.hidden_tag() }}
+
+        <div class="form-group">
+          {{ form.room.label }} {{ form.room() }}
+        </div>
+
+        <div class="form-group">
+          {{ form.category.label }} {{ form.category() }}
+        </div>
+
+        <div class="form-group">
+          {{ form.problem.label }} {{ form.problem() }}
+        </div>
+
+        {{ form.submit(class="submit-btn") }}
+      </form>
+    </div>
+
+    <div class="right-history card">
+      <h3>Мои тикеты</h3>
+      <ul class="ticket-history">
+        {% for ticket in my_tickets %}
+        <li class="{% if ticket.status == 'Выполнено' %}done{% endif %}">
+          <div><strong>Кабинет:</strong> {{ ticket.room }}</div>
+          <div><strong>Дата:</strong> {{ ticket.timestamp.strftime('%d.%m.%Y %H:%M') }}</div>
+          <div><strong>Категория:</strong> {{ ticket.category }}</div>
+          <div><strong>Статус:</strong> {{ ticket.status }}</div>
+        </li>
+        {% else %}
+        <li>Вы ещё не отправляли тикеты.</li>
         {% endfor %}
-      {% endif %}
-    {% endwith %}
-
-    <!-- 🔧 Форма отправки -->
-    <form method="POST" enctype="multipart/form-data">
-      {{ form.hidden_tag() }}
-
-      {{ form.room.label }} {{ form.room() }}
-      {{ form.category.label }} {{ form.category() }}
-      {{ form.problem.label }} {{ form.problem() }}
-      {{ form.attachment.label }} {{ form.attachment() }}
-
-      {{ form.submit() }}
-    </form>
-
-    <p><a href="{{ url_for('routes_bp.logout') }}">Выйти</a></p>
+      </ul>
+    </div>
   </div>
 </body>
 </html>

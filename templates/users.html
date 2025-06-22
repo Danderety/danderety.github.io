@@ -6,6 +6,7 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='users.css') }}">
 </head>
 <body>
+    {% include 'topbar.html' %}
   <div class="container">
     <h2>Пользователи</h2>
     <form method="POST">
@@ -47,9 +48,9 @@
           {% endfor %}
         </tbody>
       </table>
-      <button type="submit">Сохранить изменения</button>
+      <div class="blockk"> <button type="submit">Сохранить изменения</button> </div>
     </form>
-    <p><a href="{{ url_for('routes_bp.logout') }}">Выйти</a></p>
+
   </div>
 </body>
 </html>
