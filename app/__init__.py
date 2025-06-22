@@ -2,16 +2,24 @@ import os
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
-from config import Config
 
+# Конфигурация
+basedir = os.path.abspath(os.path.dirname(__file__))
+
+class Config:
+    SECRET_KEY = 'negri'
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(os.path.dirname(basedir), 'app.db')
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
+    UPLOAD_FOLDER = os.path.join('static', 'attachments')
+
+# Инициализация
 db = SQLAlchemy()
 login_manager = LoginManager()
-login_manager.login_view = 'routes.login'  # маршрут из blueprint
+login_manager.login_view = 'routes_bp.login'
 
 def create_app():
-    BASE_DIR = os.path.abspath(os.path.dirname(__file__))
-    TEMPLATE_DIR = os.path.join(os.path.dirname(BASE_DIR), "templates")
-    STATIC_DIR = os.path.join(os.path.dirname(BASE_DIR), "static")
+    TEMPLATE_DIR = os.path.join(os.path.dirname(basedir), "templates")
+    STATIC_DIR = os.path.join(os.path.dirname(basedir), "static")
 
     app = Flask(__name__, template_folder=TEMPLATE_DIR, static_folder=STATIC_DIR)
     app.config.from_object(Config)

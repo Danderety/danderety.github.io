@@ -1,1 +1,6 @@
-flask flask_sqlalchemy flask_login flask_wtf werkzeug
+Flask==2.3.2
+Flask-WTF==1.1.1
+Flask-Login==0.6.3
+Flask-SQLAlchemy==3.1.1
+WTForms==3.1.2
+Werkzeug==2.3.6
