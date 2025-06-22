@@ -15,27 +15,40 @@ def home():
 @routes_bp.route('/login', methods=['GET', 'POST'])
 def login():
     form = LoginForm()
+
     if form.validate_on_submit():
         user = User.query.filter_by(username=form.username.data).first()
         if user and check_password_hash(user.password, form.password.data):
             login_user(user)
-            if user.is_admin:
-                return redirect(url_for('routes_bp.admin_panel'))
-            return redirect(url_for('routes_bp.submit_ticket'))
-       
-    return render_template('login.html', form=form)
+            return redirect(url_for('routes_bp.admin_panel') if user.is_admin else url_for('routes_bp.submit_ticket'))
+        return redirect(url_for('routes_bp.login', error=1))
+
+    error = request.args.get('error') == '1'
+    return render_template('login.html', form=form, error=error)
+
+
 
 
 @routes_bp.route('/register', methods=['GET', 'POST'])
 def register():
     form = RegisterForm()
+    error = request.args.get("error")
+
     if form.validate_on_submit():
+        existing_user = User.query.filter_by(username=form.username.data).first()
+        if existing_user:
+            return redirect(url_for('routes_bp.register', error=1))
+
+        if form.password.data != form.confirm.data:
+            return redirect(url_for('routes_bp.register', error=2))
+
         hashed_pw = generate_password_hash(form.password.data)
         user = User(username=form.username.data, password=hashed_pw)
         db.session.add(user)
         db.session.commit()
         return redirect(url_for('routes_bp.login'))
-    return render_template('register.html', form=form)
+   
+    return render_template('register.html', form=form, error=error)
 
 
 @routes_bp.route('/logout')

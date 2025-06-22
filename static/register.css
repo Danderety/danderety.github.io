@@ -4,3 +4,42 @@
     max-width: 400px;
     margin-top: 10vh;
 }
+.error-message {
+    background-color: #f8d7da;
+    border: 1px solid #c0392b;
+    color: #a94442;
+    padding: 10px 15px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    font-weight: bold;
+}
+.form-group {
+    margin-bottom: 15px;
+}
+
+input[type="checkbox"] {
+    margin-right: 6px;
+    transform: scale(1.2);
+    vertical-align: middle;
+}
+
+label[for="password"] {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+label input[type="checkbox"] {
+    margin-left: 5px;
+    font-weight: normal;
+    font-size: 0.95rem;
+    cursor: pointer;
+}
+
+label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 5px;
+    font-size: 0.95rem;
+}

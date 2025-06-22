@@ -13,6 +13,24 @@
   <div class="container">
     <h2>Вход</h2>
     <form method="POST">
+        {% if error %}
+        <div class="error-message" id="error-message">Логин или пароль неверны.</div>
+        <script>
+            setTimeout(() => {
+            const el = document.getElementById('error-message');
+            if (el) {
+                el.style.transition = "opacity 0.5s ease";
+                el.style.opacity = 0;
+                setTimeout(() => el.remove(), 500);
+            }
+
+            const url = new URL(window.location);
+            url.searchParams.delete('error');
+            window.history.replaceState({}, document.title, url);
+            }, 2500);
+        </script>
+        {% endif %}
+
       {{ form.hidden_tag() }}
       {{ form.username.label }} {{ form.username() }}
       {{ form.password.label }} {{ form.password() }}

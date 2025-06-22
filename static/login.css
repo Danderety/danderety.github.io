@@ -4,3 +4,12 @@
     max-width: 400px;
     margin-top: 10vh;
 }
+.error-message {
+    background-color: #f8d7da;
+    border: 1px solid #c0392b;
+    color: #a94442;
+    padding: 10px 15px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    font-weight: bold;
+}

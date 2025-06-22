@@ -1,6 +1,8 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, SelectField, FileField
 from wtforms.validators import DataRequired, Length, EqualTo
+from wtforms.validators import DataRequired, Length
+
 from flask_wtf.file import FileAllowed
 
 class LoginForm(FlaskForm):
@@ -11,14 +13,20 @@ class LoginForm(FlaskForm):
     submit = SubmitField('Войти')
 
 class RegisterForm(FlaskForm):
-    username = StringField('Логин', validators=[DataRequired(), Length(min=3, max=25)],
-    render_kw={"placeholder": "Введите логин"})
-    password = PasswordField('Пароль', validators=[DataRequired(), Length(min=6)],
-    render_kw={"placeholder": "Введите пароль"})
-    confirm = PasswordField('Повторите пароль', validators=[DataRequired(), EqualTo('password')],
-    render_kw={"placeholder": "Повторите пароль"})
-    submit = SubmitField('Зарегистрироваться')
+    username = StringField("Логин", validators=[DataRequired()],
+                           render_kw={"placeholder": "Придумайте логин"})
 
+    password = PasswordField("Пароль", validators=[
+        DataRequired(),
+        Length(min=6, message="Пароль должен содержать минимум 6 символов")
+    ], render_kw={"placeholder": "Придумайте пароль", "id": "password"})
+
+    confirm = PasswordField("Повторите пароль", validators=[
+        DataRequired()
+    ], render_kw={"placeholder": "Повторите пароль"})
+
+    submit = SubmitField("Зарегистрироваться")
+    
 class SubmitTicketForm(FlaskForm):
     room = StringField("Номер кабинета", validators=[DataRequired()])
     category = SelectField("Категория", choices=[
