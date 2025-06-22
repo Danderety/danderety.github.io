@@ -12,13 +12,26 @@
     <div class="left-form card">
       <h2>Сообщить о проблеме</h2>
 
-      {% with messages = get_flashed_messages() %}
-        {% if messages %}
-          {% for message in messages %}
-            <div class="flash flash-success">{{ message }}</div>
-          {% endfor %}
-        {% endif %}
-      {% endwith %}
+      {% if success %}
+        <div class="success-message" id="success-message">Проблема успешно отправлена!</div>
+        <script>
+          setTimeout(() => {
+            const el = document.getElementById('success-message');
+            if (el) {
+              el.style.transition = "opacity 0.5s ease";
+              el.style.opacity = 0;
+              setTimeout(() => el.remove(), 500);
+            }
+
+            // ✅ Удалить ?success=1 из URL без перезагрузки
+            const url = new URL(window.location);
+            url.searchParams.delete('success');
+            window.history.replaceState({}, document.title, url);
+          }, 2000);
+        </script>
+
+      {% endif %}
+
 
       <form method="POST">
         {{ form.hidden_tag() }}

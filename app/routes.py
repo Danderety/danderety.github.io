@@ -8,6 +8,9 @@ from app.forms import LoginForm, RegisterForm, SubmitTicketForm
 
 routes_bp = Blueprint('routes_bp', __name__)
 
+@routes_bp.route('/')
+def home():
+    return redirect(url_for('routes_bp.login'))
 
 @routes_bp.route('/login', methods=['GET', 'POST'])
 def login():
@@ -31,7 +34,6 @@ def register():
         user = User(username=form.username.data, password=hashed_pw)
         db.session.add(user)
         db.session.commit()
-        flash('Пользователь зарегистрирован')
         return redirect(url_for('routes_bp.login'))
     return render_template('register.html', form=form)
 
@@ -59,11 +61,11 @@ def submit_ticket():
         )
         db.session.add(ticket)
         db.session.commit()
-        flash('Тикет отправлен')
-        return redirect(url_for('routes_bp.submit_ticket'))
-
+        return redirect(url_for('routes_bp.submit_ticket', success=1))
+        
+    success = request.args.get('success') == '1'
     my_tickets = Ticket.query.filter_by(user_id=current_user.id).order_by(Ticket.timestamp.desc()).limit(10).all()
-    return render_template('submit.html', form=form, my_tickets=my_tickets)
+    return render_template('submit.html', form=form, my_tickets=my_tickets, success=success)
 
 
 
@@ -71,7 +73,7 @@ def submit_ticket():
 @login_required
 def admin_panel():
     if not current_user.is_admin:
-        flash('Доступ запрещен')
+        
         return redirect(url_for('routes_bp.submit_ticket'))
 
     tickets = Ticket.query.order_by(Ticket.timestamp.desc()).all()
@@ -116,7 +118,7 @@ def delete_tickets():
 @login_required
 def users():
     if not current_user.is_super:
-        flash('Доступ запрещён')
+        
         return redirect(url_for('routes_bp.submit_ticket'))
 
     users = User.query.all()
@@ -143,7 +145,7 @@ def users():
                 user.admin_assigned_at = None
 
         db.session.commit()
-        flash('Изменения сохранены.')
+        
         return redirect(url_for('routes_bp.users'))
 
     return render_template('users.html', users=users)

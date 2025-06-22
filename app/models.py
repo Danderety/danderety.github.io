@@ -14,7 +14,8 @@ class User(UserMixin, db.Model):
     is_admin = db.Column(db.Boolean, default=False)
     is_super = db.Column(db.Boolean, default=False)
     admin_assigned_at = db.Column(db.DateTime, nullable=True)
-    tickets = db.relationship('Ticket', backref='author', lazy=True)
+    tickets = db.relationship('Ticket', backref='user', cascade="all, delete", passive_deletes=True)
+
 
     def __repr__(self):
         return f'<User {self.username}>'
@@ -26,7 +27,8 @@ class Ticket(db.Model):
     problem = db.Column(db.Text, nullable=False)
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
     status = db.Column(db.String(20), default='Открыт')
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id', ondelete="CASCADE"), nullable=False)
+
 
     def __repr__(self):
         return f'<Ticket {self.room} - {self.category}>'

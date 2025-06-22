@@ -71,3 +71,12 @@ h3 {
     border-color: #4CAF50;
     
 }
+.success-message {
+    background-color: #dff0d8;
+    border: 1px solid #3c763d;
+    color: #3c763d;
+    padding: 10px 15px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    font-weight: bold;
+}
