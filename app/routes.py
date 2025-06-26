@@ -101,7 +101,7 @@ def toggle_done(ticket_id):
 
     data = request.get_json()
     ticket = Ticket.query.get_or_404(ticket_id)
-    ticket.status = 'Выполнено' if data.get('done') else 'Открыт'
+    ticket.status = 'Выполнено' if data.get('done') else 'Выполняется'
     db.session.commit()
     return '', 204
 
