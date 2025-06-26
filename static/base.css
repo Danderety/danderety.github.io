@@ -3,8 +3,8 @@ body {
     margin: 0;
     padding: 0;
     font-family: 'Segoe UI', sans-serif;
-    background-color: #F2F2F2; /* Светлый фон */
-    color: #1A1A1A; /* Основной цвет текста */
+    background-color: #F2F2F2;
+    color: #1A1A1A;
 }
 
 /* === ОБЁРТКА КОНТЕНТА === */
@@ -12,17 +12,17 @@ body {
     max-width: 800px;
     margin: 30px auto;
     padding: 20px;
-    background-color: #FFFFFF; /* Белый фон блока */
+    background-color: #FFFFFF;
     border-radius: 12px;
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
 }
 
 /* === ЗАГОЛОВКИ === */
-h1, h2 ,h3{
-    color: #2F80ED; /* Синий цвет акцентов */
+h1, h2, h3 {
+    color: #2F80ED;
 }
 
-/* === ФОРМЫ (input, select, textarea) === */
+/* === ФОРМЫ === */
 input,
 select,
 textarea {
@@ -35,7 +35,6 @@ textarea {
     box-sizing: border-box;
 }
 
-/* === Фокус на полях === */
 input:focus,
 select:focus,
 textarea:focus {
@@ -46,10 +45,9 @@ textarea:focus {
 /* === КНОПКИ === */
 button,
 .btn {
-    background-color: #2F80ED; /* Основной синий */
+    background-color: #2F80ED;
     color: white;
     padding: 10px 18px;
-    height: -10px;
     border: none;
     border-radius: 8px;
     cursor: pointer;
@@ -59,7 +57,7 @@ button,
 
 button:hover,
 .btn:hover {
-    background-color: #1C5BCF; /* Темнее при наведении */
+    background-color: #1C5BCF;
 }
 
 /* === FLASH-СООБЩЕНИЯ === */
@@ -70,24 +68,24 @@ button:hover,
     font-weight: bold;
 }
 
-/* Успешное сообщение */
 .flash-success {
     background-color: #DFF5E3;
     color: #27AE60;
 }
 
-/* Ошибка или неудача */
 .flash-error {
     background-color: #FDE2E2;
     color: #EB5757;
 }
 
-/* === LABEL (метки форм) === */
+/* === LABEL === */
 label {
     font-weight: 600;
     margin-bottom: 5px;
     display: inline-block;
 }
+
+/* === TOPBAR === */
 .topbar {
     display: flex;
     justify-content: space-between;
@@ -104,7 +102,6 @@ label {
     color: #2F80ED;
     font-weight: bold;
 }
-
 .topbar a.logout-btn {
     background-color: #eb5757;
     color: white;
@@ -116,6 +113,24 @@ label {
     background-color: #c0392b;
 }
 
+.sidebar a.logout-btn {
+    background-color: #eb5757;
+    color: white;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 0.9rem;
+    padding: 4px 10px;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+
+.sidebar a.logout-btn:hover {
+    background-color: #c0392b;
+}
+
+
 .topbar .username {
     margin-right: 10px;
     font-weight: bold;
@@ -125,23 +140,150 @@ label {
     margin-right: 10px;
 }
 
-/* === МЕДИА-ЗАПРОС ДЛЯ АДАПТИВНОСТИ === */
+/* === ГАМБУРГЕР и БОКОВОЕ МЕНЮ === */
+.hamburger {
+    display: none;
+    font-size: 26px;
+    cursor: pointer;
+    user-select: none;
+    color: #2F80ED;
+    padding: 4px 10px;
+    margin-left: auto;
+}
+
+.sidebar {
+    display: none;
+    position: fixed;
+    top: 0;
+    right: -260px;
+    width: 250px;
+    height: 100%;
+    background-color: #fff;
+    box-shadow: -2px 0 8px rgba(0, 0, 0, 0.2);
+    padding: 20px;
+    transition: right 0.3s ease;
+    z-index: 1000;
+}
+
+.sidebar.open {
+    display: block;
+    right: 0;
+}
+
+.sidebar a {
+    display: block;
+    margin: 12px 0;
+    text-decoration: none;
+    color: #2F80ED;
+    font-weight: bold;
+}
+
+.sidebar .close-btn {
+    font-size: 28px;
+    text-align: right;
+    display: block;
+    margin-bottom: 20px;
+    color: #c0392b;
+    cursor: pointer;
+}
+
+/* === АДАПТИВНОСТЬ ДЛЯ МОБИЛЬНЫХ === */
 @media (max-width: 600px) {
-    .container {
-        margin: 10px;
-        padding: 15px;
-    }
+  .topbar {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    padding: 8px 12px;
+    background-color: #f0f0f0;
+    font-size: 1rem;
+    margin-bottom: 10px;
+  }
 
-    input,
-    select,
-    textarea {
-        font-size: 0.95rem;
-    }
+  .left-links,
+  .right-links {
+    display: none;
+  }
 
-    button,
-    .btn {
-        width: 100%;
-        padding: 12px;
-        font-size: 1rem;
-    }
+  .hamburger {
+    display: block;
+    font-size: 26px;
+    cursor: pointer;
+    user-select: none;
+    color: #2F80ED;
+    padding: 6px 12px;
+    margin-left: auto;
+  }
+
+  .sidebar {
+    position: fixed;
+    top: 0;
+    right: -100%;
+    width: 250px;
+    height: 100%;
+    background-color: #fff;
+    box-shadow: -2px 0 10px rgba(0, 0, 0, 0.2);
+    padding: 20px;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    align-items: stretch;
+    transition: right 0.3s ease;
+  }
+
+  .sidebar.open {
+    right: 0;
+  }
+
+  .sidebar .close-btn {
+    font-size: 35px;
+    color: #c0392b;
+    cursor: pointer;
+    margin-left: auto;
+    background: none;
+    border: none;
+    padding: 0;
+  }
+
+  .sidebar p {
+    margin: 0;
+    font-weight: bold;
+    font-size: 1rem;
+    
+    border-bottom: 1px solid #eee;
+  }
+
+  .sidebar a {
+    font-size: 0.95rem;
+    
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: bold;
+    color: #2F80ED;
+    background-color: transparent;
+    transition: background-color 0.2s ease;
+    display: block;
+    width: 100%;
+  }
+
+  .sidebar a:hover:not(.logout-btn) {
+    background-color: rgba(47, 128, 237, 0.08);
+  }
+
+.sidebar a.logout-btn {
+    background-color: #eb5757;
+    color: white;
+    text-align: center;
+    font-size: 1rem;     /* размер текста меньше */
+    padding: 5px 10px;       /* высота и ширина меньше */
+    border-radius: 6px;
+    display: inline-block;
+    width: auto;             /* не растягивать на всю ширину */
+}
+
+
+.sidebar a.logout-btn {
+    margin: 10px auto 0;
+}
+
 }

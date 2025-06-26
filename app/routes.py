@@ -69,7 +69,7 @@ def submit_ticket():
             category=form.category.data,
             problem=form.problem.data,
             timestamp=datetime.utcnow(),
-            status='Открыт',
+            status='Выполняется',
             user_id=current_user.id
         )
         db.session.add(ticket)
@@ -131,12 +131,31 @@ def delete_tickets():
 @login_required
 def users():
     if not current_user.is_super:
-        
         return redirect(url_for('routes_bp.submit_ticket'))
 
     users = User.query.all()
 
     if request.method == 'POST':
+        # --- Создание нового пользователя ---
+        if 'create_user' in request.form:
+            username = request.form.get('new_username', '').strip()
+            password = request.form.get('new_password', '').strip()
+            role = request.form.get('new_role', 'user')
+
+            if username and password:
+                existing_user = User.query.filter_by(username=username).first()
+                if not existing_user:
+                    hashed = generate_password_hash(password)
+                    new_user = User(username=username, password=hashed)
+                    if role == 'admin':
+                        new_user.is_admin = True
+                        new_user.admin_assigned_at = datetime.utcnow()
+                    db.session.add(new_user)
+                    db.session.commit()
+
+            return redirect(url_for('routes_bp.users'))
+
+        # --- Обновление/удаление существующих пользователей ---
         for user in users:
             if user.is_super:
                 continue
@@ -158,7 +177,7 @@ def users():
                 user.admin_assigned_at = None
 
         db.session.commit()
-        
         return redirect(url_for('routes_bp.users'))
 
     return render_template('users.html', users=users)
+

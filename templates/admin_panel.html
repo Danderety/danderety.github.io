@@ -2,6 +2,8 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
+  <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Админ-панель</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='admin_panel.css') }}">
 </head>
@@ -13,54 +15,73 @@
     <input type="text" id="search-input" placeholder="Поиск..." class="search-input">
     <button onclick="deleteTickets('now')">Удалить</button>
 
-    <!-- ✅ Боковая панель с кнопками удаления -->
-    <div class="delete-panel" id="delete-panel" style="display: none;">
-      
+    <div class="delete-panel" id="delete-panel" style="display: none;"></div>
 
+    <div class="table-wrapper">
+      <table class="ticket-table">
+        <thead>
+          <tr>
+            <th>Удалить</th>
+            <th>Кабинет</th>
+            <th>Категория</th>
+            <th>Проблема</th>
+            <th>Дата</th>
+            <th>Выполнено</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for ticket in tickets %}
+          <tr>
+            <td data-label="Удалить">
+              
+              <input type="checkbox" class="delete-checkbox" data-id="{{ ticket.id }}">
+            </td>
+            <td data-label="Кабинет">{{ ticket.room }}</td>
+            <td data-label="Категория">{{ ticket.category }}</td>
+            <td data-label="Проблема">
+              {% set text = ticket.problem | string %}
+              {% if text|length > 51 %}
+                <div class="table-trimmed">
+                  <div class="trimmed-content">
+                    {{ text[:52] }}...
+                  </div>
+                  <button class="show-more-btn"
+                          onclick="showFullText(`{{ text | replace('`', '\\`') | e }}`)">
+                    Показать
+                  </button>
+                </div>
+              {% else %}
+                {{ text }}
+              {% endif %}
+            </td>
+
+
+
+
+
+            <td data-label="Дата">{{ ticket.timestamp.strftime('%Y-%m-%d %H:%M') }}</td>
+            <td data-label="Выполнено">
+              <input type="checkbox"
+                     class="done-checkbox"
+                     data-id="{{ ticket.id }}"
+                     {% if ticket.status == 'Выполнено' %}checked{% endif %}>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
     </div>
+  </div>
 
-    <table class="ticket-table">
-      <thead>
-        <tr>
-          <th>Удалить</th>
-          <th>Кабинет</th>
-          <th>Категория</th>
-          <th>Проблема</th>
-          <th>Дата</th>
-          <th>Выполнено</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for ticket in tickets %}
-        <tr>
-          <td>
-            <input type="checkbox" class="delete-checkbox" data-id="{{ ticket.id }}">
-          </td>
-          <td>{{ ticket.room }}</td>
-          <td>{{ ticket.category }}</td>
-          <td>
-            {% if ticket.problem|length > 100 %}
-              {{ ticket.problem[:100] }}...
-              <a href="#" onclick="alert(`{{ ticket.problem|e }}`)">Показать</a>
-            {% else %}
-              {{ ticket.problem }}
-            {% endif %}
-          </td>
-          <td>{{ ticket.timestamp.strftime('%Y-%m-%d %H:%M') }}</td>
-          <td>
-            <input type="checkbox"
-                   class="done-checkbox"
-                   data-id="{{ ticket.id }}"
-                   {% if ticket.status == 'Выполнено' %}checked{% endif %}>
-          </td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
+  <!-- Модальное окно -->
+  <div id="modal" class="modal-overlay">
+    <div class="modal-content">
+      <span class="modal-close" onclick="closeModal()">&times;</span>
+      <div id="modal-text"></div>
+    </div>
   </div>
 
   <script>
-    // ✅ Автосохранение "Выполнено"
     document.querySelectorAll('.done-checkbox').forEach(box => {
       box.addEventListener('change', async () => {
         const id = box.getAttribute('data-id');
@@ -73,7 +94,6 @@
       });
     });
 
-    // ✅ Отображение панели удаления
     const deletePanel = document.getElementById('delete-panel');
     const deleteCheckboxes = document.querySelectorAll('.delete-checkbox');
 
@@ -84,7 +104,6 @@
       });
     });
 
-    // ✅ Обработка удаления
     async function deleteTickets(action) {
       const ids = [...deleteCheckboxes]
         .filter(cb => cb.checked)
@@ -100,16 +119,35 @@
 
       window.location.reload();
     }
-    document.getElementById('search-input').addEventListener('input', function () {
-    const filter = this.value.toLowerCase();
-    const rows = document.querySelectorAll('.ticket-table tbody tr');
 
-    rows.forEach(row => {
+    document.getElementById('search-input').addEventListener('input', function () {
+      const filter = this.value.toLowerCase();
+      const rows = document.querySelectorAll('.ticket-table tbody tr');
+      rows.forEach(row => {
         const text = row.innerText.toLowerCase();
         row.style.display = text.includes(filter) ? '' : 'none';
+      });
     });
+
+
+    function showFullText(text) {
+      const modal = document.getElementById('modal');
+      document.getElementById('modal-text').textContent = text;
+      modal.style.display = 'flex';
+    }
+
+    function closeModal() {
+      document.getElementById('modal').style.display = 'none';
+    }
+
+
+    function closeModal() {
+      document.getElementById('modal').style.display = 'none';
+    }
+
+    window.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') closeModal();
     });
-    
   </script>
 </body>
 </html>

@@ -2,7 +2,15 @@
 <html lang="ru">
 
 <head>
+  
   <meta charset="UTF-8">
+  <!-- PWA Manifest -->
+  <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}">
+  <meta name="theme-color" content="#2F80ED">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <link rel="apple-touch-icon" href="{{ url_for('static', filename='icons/image.png') }}">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Вход</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='login.css') }}">
 </head>
@@ -14,7 +22,7 @@
     <h2>Вход</h2>
     <form method="POST">
         {% if error %}
-        <div class="error-message" id="error-message">Логин или пароль неверны.</div>
+        <div class="error-message" id="error-message">Логин или пароль неверный.</div>
         <script>
             setTimeout(() => {
             const el = document.getElementById('error-message');
@@ -38,5 +46,14 @@
     </form>
     <p>Нет аккаунта? <a href="{{ url_for('routes_bp.register') }}">Зарегистрироваться</a></p>
   </div>
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/static/service-worker.js')
+        .then(() => console.log("✅ Service Worker зарегистрирован"))
+        .catch(err => console.error("❌ Ошибка регистрации Service Worker:", err));
+    }
+  </script>
+
+
 </body>
 </html>

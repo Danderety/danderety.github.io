@@ -2,55 +2,105 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
+  <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Управление пользователями</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='users.css') }}">
 </head>
+
 <body>
-    {% include 'topbar.html' %}
+  {% include 'topbar.html' %}
   <div class="container">
     <h2>Пользователи</h2>
-    <form method="POST">
-      <table class="user-table">
-        <thead>
-          <tr>
-            <th>Имя</th>
-            <th>Роль</th>
-            <th>Дата назначения</th>
-            <th>Новый пароль</th>
-            <th>Админ</th>
-            <th>Удалить</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for user in users %}
-          <tr>
-            <td>{{ user.username }}</td>
-            <td>
-              {% if user.is_super %}<strong>Суперпользователь</strong>
-              {% elif user.is_admin %}Админ
-              {% else %}Пользователь{% endif %}
-            </td>
-            <td>{{ user.admin_assigned_at.strftime('%Y-%m-%d %H:%M') if user.admin_assigned_at else '' }}</td>
-            <td><input type="text" name="password_{{ user.id }}"></td>
-            <td>
-              {% if not user.is_super %}
-              <input type="checkbox" name="admin_{{ user.id }}" {% if user.is_admin %}checked{% endif %}>
-              {% endif %}
-            </td>
-            <td>
-              {% if not user.is_super %}
-              <input type="submit" name="delete_{{ user.id }}" value="Удалить">
-              {% else %}
-              —
-              {% endif %}
-            </td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-      <div class="blockk"> <button type="submit">Сохранить изменения</button> </div>
-    </form>
+    <button type="button" class="open-user-modal-btn" onclick="openUserModal()">Добавить пользователя</button>
 
+    <!-- Модальное окно -->
+    <div id="user-modal" class="modal-overlay">
+      
+      <div class="modal-card">
+        
+        <form method="POST" class="modal-card">
+          
+          <span class="modal-close" onclick="closeUserModal()">&times;</span>
+          <h3>Создание пользователя</h3>
+
+          <label for="new_username">Логин:</label>
+          <input type="text" name="new_username" id="new_username" required>
+
+          <label for="new_password">Пароль:</label>
+          <input type="text" name="new_password" id="new_password" required>
+
+          <label for="new_role">Роль:</label>
+          <select name="new_role" id="new_role">
+            <option value="user">Пользователь</option>
+            <option value="admin">Админ</option>
+          </select>
+
+          <button type="submit" name="create_user" value="1">Создать</button>
+        </form>
+
+      </div>
+    </div>
+
+    <form method="POST">
+      <div class="table-wrapper">
+        <table class="user-table">
+          <thead>
+            <tr>
+              <th>Имя</th>
+              <th>Роль</th>
+              <th>Дата назначения</th>
+              <th>Новый пароль</th>
+              <th>Админ</th>
+              <th>Удалить</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for user in users %}
+            <tr>
+              <td data-label="Имя">{{ user.username }}</td>
+              <td data-label="Роль">
+                {% if user.is_super %}<strong>Суперпользователь</strong>
+                {% elif user.is_admin %}Админ
+                {% else %}Пользователь{% endif %}
+              </td>
+              <td data-label="Дата назначения">{{ user.admin_assigned_at.strftime('%Y-%m-%d %H:%M') if user.admin_assigned_at else '' }}</td>
+              <td data-label="Новый пароль">
+                <input type="text" name="password_{{ user.id }}">
+              </td>
+              <td data-label="Админ">
+                {% if not user.is_super %}
+                <input type="checkbox" name="admin_{{ user.id }}" {% if user.is_admin %}checked{% endif %}>
+                {% endif %}
+              </td>
+              <td data-label="">
+                {% if not user.is_super %}
+                <input type="submit" name="delete_{{ user.id }}" value="Удалить">
+                {% else %}—{% endif %}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      <div class="blockk">
+        <button type="submit">Сохранить изменения</button>
+      </div>
+    </form>
   </div>
+
+  <script>
+    function openUserModal() {
+      document.getElementById("user-modal").style.display = "flex";
+    }
+
+    function closeUserModal() {
+      document.getElementById("user-modal").style.display = "none";
+    }
+
+    window.addEventListener("keydown", function (e) {
+      if (e.key === "Escape") closeUserModal();
+    });
+  </script>
 </body>
 </html>

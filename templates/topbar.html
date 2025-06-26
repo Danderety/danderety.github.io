@@ -1,19 +1,51 @@
-<div class="topbar">
-  <div class="left-links">
+{% if request.endpoint not in ['routes_bp.login', 'routes_bp.register'] %}
+  <div class="topbar">
+    <div class="left-links">
+      {% if current_user.is_authenticated %}
+        {% if current_user.is_admin and request.endpoint != 'routes_bp.admin_panel' %}
+          <a href="{{ url_for('routes_bp.admin_panel') }}" class="topbar-btn">Админ-панель</a>
+        {% endif %}
+        {% if current_user.is_super and request.endpoint != 'routes_bp.users' %}
+          <a href="{{ url_for('routes_bp.users') }}" class="topbar-btn">Пользователи</a>
+        {% endif %}
+        {% if request.endpoint != 'routes_bp.submit_ticket' %}
+          <a href="{{ url_for('routes_bp.submit_ticket') }}" class="topbar-btn">Тикеты</a>
+        {% endif %}
+      {% endif %}
+    </div>
+
+    <div class="right-links">
+      {% if current_user.is_authenticated %}
+        <span class="username">{{ current_user.username }}</span>
+        <a href="{{ url_for('routes_bp.logout') }}" class="logout-btn">Выйти</a>
+      {% endif %}
+    </div>
+
+    <!-- Гамбургер (только для мобилок) -->
+    <div class="hamburger" onclick="toggleSidebar()">☰</div>
+  </div>
+
+  <!-- Боковое меню (только для мобилок) -->
+  <div id="sidebar" class="sidebar">
+    <a href="#" class="close-btn" onclick="toggleSidebar()">×</a>
     {% if current_user.is_authenticated %}
-      {% if current_user.is_admin %}
+      <p><strong>{{ current_user.username }}</strong></p>
+      {% if current_user.is_admin and request.endpoint != 'routes_bp.admin_panel' %}
         <a href="{{ url_for('routes_bp.admin_panel') }}">Админ-панель</a>
       {% endif %}
-      {% if current_user.is_super %}
+      {% if current_user.is_super and request.endpoint != 'routes_bp.users' %}
         <a href="{{ url_for('routes_bp.users') }}">Пользователи</a>
       {% endif %}
+      {% if request.endpoint != 'routes_bp.submit_ticket' %}
+        <a href="{{ url_for('routes_bp.submit_ticket') }}">Тикеты</a>
+      {% endif %}
+      <a href="{{ url_for('routes_bp.logout') }}" class="logout-btn">Выйти</a>
     {% endif %}
   </div>
 
-  <div class="right-links">
-    {% if current_user.is_authenticated %}
-      <span class="username">{{ current_user.username }}</span>
-      <a class="logout-btn" href="{{ url_for('routes_bp.logout') }}">Выйти</a>
-    {% endif %}
-  </div>
-</div>
+  <script>
+    function toggleSidebar() {
+      document.getElementById('sidebar').classList.toggle('open');
+    }
+  </script>
+{% endif %}

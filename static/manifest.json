@@ -1,0 +1,20 @@
+{
+  "name": "Сервис заявок",
+  "short_name": "Заявки",
+  "start_url": "/login",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#2F80ED",
+  "icons": [
+    {
+      "src": "/static/icons/image.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/static/icons/image.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

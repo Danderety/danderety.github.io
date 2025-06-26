@@ -26,7 +26,7 @@ class Ticket(db.Model):
     category = db.Column(db.String(20), nullable=False)
     problem = db.Column(db.Text, nullable=False)
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
-    status = db.Column(db.String(20), default='Открыт')
+    status = db.Column(db.String(20), default='Выполняется')
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 
     def __repr__(self):
