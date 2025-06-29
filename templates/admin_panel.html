@@ -19,56 +19,88 @@
     <div class="delete-panel" id="delete-panel" style="display: none;"></div>
 
     <div class="table-wrapper">
-      <table class="ticket-table">
-        <thead>
-          <tr>
-            <th>Удалить</th>
-            <th>Кабинет</th>
-            <th>Категория</th>
-            <th>Проблема</th>
-            <th>Дата</th>
-            <th>Выполнено</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for ticket in tickets %}
-          <tr>
-            <td data-label="Удалить">
-              <input type="checkbox" class="delete-checkbox" data-id="{{ ticket.id }}">
-            </td>
-            <td data-label="Кабинет">{{ ticket.room }}</td>
-            <td data-label="Категория">{{ ticket.category }}</td>
-            <td data-label="Проблема">
-              {% set text = ticket.problem | string %}
-              {% if text|length > 51 %}
-                <div class="table-trimmed">
-                  <div class="trimmed-content">
-                    {{ text[:52] }}...
+      <form method="get">
+        <table class="ticket-table">
+          <thead>
+            <tr>
+              <th>Удалить</th>
+              <th>Кабинет</th>
+              <th>Категория</th>
+              <th>Проблема</th>
+              <th>Дата</th>
+              <th>Выполнено</th>
+            </tr>
+            <tr>
+              <th></th>
+              <th>
+                <select name="room" onchange="this.form.submit()">
+                  <option value="">Все</option>
+                  {% for room in rooms %}
+                    <option value="{{ room }}" {% if request.args.get('room') == room %}selected{% endif %}>{{ room }}</option>
+                  {% endfor %}
+                </select>
+              </th>
+              <th>
+                <select name="category" onchange="this.form.submit()">
+                  <option value="">Все</option>
+                  {% for category in categories %}
+                    <option value="{{ category }}" {% if request.args.get('category') == category %}selected{% endif %}>{{ category }}</option>
+                  {% endfor %}
+                </select>
+              </th>
+              <th></th>
+              <th>
+                <input type="datetime-local" name="date_from" value="{{ request.args.get('date_from', '') }}" style="width: 100%;" onchange="this.form.submit()">
+                <input type="datetime-local" name="date_to" value="{{ request.args.get('date_to', '') }}" style="width: 100%;" onchange="this.form.submit()">
+              </th>
+              <th>
+                <select name="status" onchange="this.form.submit()" id="status-filter">
+                  <option value="">Все</option>
+                  <option value="done" {% if request.args.get('status') == 'done' %}selected{% endif %}>✔</option>
+                  <option value="not_done" {% if request.args.get('status') == 'not_done' %}selected{% endif %}>✘</option>
+                </select>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for ticket in tickets %}
+            <tr>
+              <td data-label="Удалить">
+                <input type="checkbox" class="delete-checkbox" data-id="{{ ticket.id }}">
+              </td>
+              <td data-label="Кабинет">{{ ticket.room }}</td>
+              <td data-label="Категория">{{ ticket.category }}</td>
+              <td data-label="Проблема">
+                {% set text = ticket.problem | string %}
+                {% if text|length > 20 %}
+                  <div class="table-trimmed">
+                    <div class="trimmed-content">
+                      {{ text[:52] }}...
+                    </div>
+                    <button type="button" class="show-more-btn"
+                            onclick="showFullText(`{{ text | replace('`', '\\`') | e }}`)">
+                      Показать
+                    </button>
                   </div>
-                  <button class="show-more-btn"
-                          onclick="showFullText(`{{ text | replace('`', '\\`') | e }}`)">
-                    Показать
-                  </button>
-                </div>
-              {% else %}
-                {{ text }}
-              {% endif %}
-            </td>
-            <td data-label="Дата">{{ ticket.timestamp.strftime('%Y-%m-%d %H:%M') }}</td>
-            <td data-label="Выполнено">
-              <input type="checkbox"
-                     class="done-checkbox"
-                     data-id="{{ ticket.id }}"
-                     {% if ticket.status == 'Выполнено' %}checked{% endif %}>
-            </td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
+                {% else %}
+                  {{ text }}
+                {% endif %}
+              </td>
+              <td data-label="Дата">{{ ticket.timestamp.strftime('%Y-%m-%d %H:%M') }}</td>
+              <td data-label="Выполнено">
+                <input type="checkbox"
+                       class="done-checkbox"
+                       data-id="{{ ticket.id }}"
+                       {% if ticket.status == 'Выполнено' %}checked{% endif %}>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </form>
     </div>
   </div>
 
-  <!-- Модальное окно -->
   <div id="modal" class="modal-overlay">
     <div class="modal-content">
       <span class="modal-close" onclick="closeModal()">&times;</span>
@@ -76,10 +108,8 @@
     </div>
   </div>
 
-  <!-- Скрипты -->
   <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
   <script>
-    // DONE Чекбоксы
     function bindDoneCheckbox(checkbox) {
       checkbox.addEventListener('change', async () => {
         const id = checkbox.getAttribute('data-id');
@@ -94,7 +124,6 @@
 
     document.querySelectorAll('.done-checkbox').forEach(bindDoneCheckbox);
 
-    // DELETE Панель
     const deletePanel = document.getElementById('delete-panel');
     const deleteCheckboxes = document.querySelectorAll('.delete-checkbox');
 
@@ -121,7 +150,6 @@
       window.location.reload();
     }
 
-    // ПОИСК
     document.getElementById('search-input').addEventListener('input', function () {
       const filter = this.value.toLowerCase();
       const rows = document.querySelectorAll('.ticket-table tbody tr');
@@ -131,7 +159,6 @@
       });
     });
 
-    // МОДАЛКА
     function showFullText(text) {
       const modal = document.getElementById('modal');
       document.getElementById('modal-text').textContent = text;
@@ -146,7 +173,6 @@
       if (e.key === 'Escape') closeModal();
     });
 
-    // WEBSOCKET
     const socket = io({ path: '/socket.io', transports: ['websocket'] });
 
     socket.on('connect', () => {
@@ -154,13 +180,19 @@
     });
 
     socket.on('new_ticket', (ticket) => {
+      const filters = {{ filters | tojson }};
+      if (filters.status === 'done' && ticket.status !== 'Выполнено') return;
+      if (filters.status === 'not_done' && ticket.status === 'Выполнено') return;
+      if (filters.room && ticket.room !== filters.room) return;
+      if (filters.category && ticket.category !== filters.category) return;
+
       const tbody = document.querySelector('.ticket-table tbody');
       const row = document.createElement('tr');
 
       const trimmedText = ticket.problem.length > 51
         ? `<div class="table-trimmed">
              <div class="trimmed-content">${ticket.problem.slice(0, 52)}...</div>
-             <button class="show-more-btn" onclick="showFullText(\`${ticket.problem.replace(/`/g, '\\`')}\`)">Показать</button>
+             <button type="button" class="show-more-btn" onclick="showFullText(\`${ticket.problem.replace(/`/g, '\\`')}\`)">Показать</button>
            </div>`
         : ticket.problem;
 
@@ -178,14 +210,7 @@
       `;
 
       tbody.prepend(row);
-
-      const newDone = row.querySelector('.done-checkbox');
-      const newDel = row.querySelector('.delete-checkbox');
-      bindDoneCheckbox(newDone);
-      newDel.addEventListener('change', () => {
-        const anyChecked = [...document.querySelectorAll('.delete-checkbox')].some(c => c.checked);
-        document.getElementById('delete-panel').style.display = anyChecked ? 'flex' : 'none';
-      });
+      bindDoneCheckbox(row.querySelector('.done-checkbox'));
     });
 
     socket.on('ticket_updated', (data) => {

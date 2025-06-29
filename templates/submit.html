@@ -7,12 +7,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Отправка тикета</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='submit.css') }}">
-  <style>
-    /* Дополнительная подсветка */
-    .ticket-history li.done {
-      background-color: #d4edda;
-    }
-  </style>
+
 </head>
 <body>
   {% include 'topbar.html' %}
@@ -52,7 +47,8 @@
         </div>
 
         <div class="form-group">
-          {{ form.problem.label }} {{ form.problem() }}
+          {{ form.problem.label }}
+          {{ form.problem(class="form-control", id="problem", rows="3", oninput="autoResize(this)", placeholder="Опишите проблему...") }}
         </div>
 
         {{ form.submit(class="submit-btn") }}
@@ -96,5 +92,37 @@
       }
     });
   </script>
+  <script>
+  document.addEventListener('DOMContentLoaded', () => {
+      const form = document.querySelector('form');
+      const problemField = document.getElementById('problem');
+
+      if (form && problemField) {
+          // Автоувеличение поля
+          function autoResize(textarea) {
+              textarea.style.height = 'auto';
+              textarea.style.height = textarea.scrollHeight + 'px';
+          }
+
+          autoResize(problemField);
+          problemField.addEventListener('input', () => autoResize(problemField));
+
+          // Предотвращаем отправку формы при нажатии Enter в textarea
+          problemField.addEventListener('keydown', function (e) {
+              if (e.key === 'Enter' && !e.ctrlKey && !e.metaKey) {
+                  e.stopPropagation();  // важно: не даём событию всплыть
+              }
+          });
+
+          // Предотвращаем submit формы по Enter, если фокус в textarea
+          form.addEventListener('keydown', function (e) {
+              if (e.key === 'Enter' && document.activeElement === problemField) {
+                  e.preventDefault();  // отменяем отправку формы
+              }
+          });
+      }
+  });
+  </script>
+
 </body>
 </html>

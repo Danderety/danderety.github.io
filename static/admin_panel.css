@@ -8,6 +8,22 @@
   table-layout: fixed;
   font-size: 0.95rem;
 }
+.ticket-table thead tr:nth-child(2) th {
+  padding: 4px 6px;
+  background-color: #f9f9f9;
+}
+.ticket-table thead select,
+.ticket-table thead input[type="datetime-local"] {
+  width: 100%;
+  padding: 4px 6px;
+  font-size: 0.9em;
+  box-sizing: border-box;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+.ticket-table thead th input[type="datetime-local"] {
+  margin-bottom: 4px;
+}
 
 .ticket-table th,
 .ticket-table td {

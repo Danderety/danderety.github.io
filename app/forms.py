@@ -2,7 +2,7 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, SelectField, FileField
 from wtforms.validators import DataRequired, Length, EqualTo
 from wtforms.validators import DataRequired, Length
-from wtforms import BooleanField
+from wtforms import BooleanField, TextAreaField
 from flask_wtf.file import FileAllowed
 
 class LoginForm(FlaskForm):
@@ -39,6 +39,6 @@ class SubmitTicketForm(FlaskForm):
         ('Проектор', 'Проектор'),
         ('Иное', 'Иное'),
     ], validators=[DataRequired()])
-    problem = StringField("Проблема", validators=[DataRequired()])
+    problem = TextAreaField("Проблема", validators=[DataRequired()])
     submit = SubmitField("Отправить")
 

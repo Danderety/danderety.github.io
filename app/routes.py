@@ -105,13 +105,50 @@ def submit_ticket():
 @routes_bp.route('/admin', methods=['GET'])
 @login_required
 def admin_panel():
-    if not current_user.is_admin:
-        
-        return redirect(url_for('routes_bp.submit_ticket'))
+    query = Ticket.query
 
-    tickets = Ticket.query.order_by(Ticket.timestamp.desc()).all()
-    return render_template('admin_panel.html', tickets=tickets)
+    room = request.args.get('room')
+    if room:
+        query = query.filter_by(room=room)
 
+    category = request.args.get('category')
+    if category:
+        query = query.filter_by(category=category)
+
+    status = request.args.get('status')
+    if status == 'done':
+        query = query.filter_by(status='Выполнено')
+    elif status == 'not_done':
+        query = query.filter(Ticket.status != 'Выполнено')
+
+    date_from = request.args.get('date_from')
+    if date_from:
+        try:
+            dt_from = datetime.fromisoformat(date_from)
+            query = query.filter(Ticket.timestamp >= dt_from)
+        except ValueError:
+            pass
+
+    date_to = request.args.get('date_to')
+    if date_to:
+        try:
+            dt_to = datetime.fromisoformat(date_to)
+            query = query.filter(Ticket.timestamp <= dt_to)
+        except ValueError:
+            pass
+
+    tickets = query.order_by(Ticket.timestamp.desc()).all()
+    rooms = [r[0] for r in db.session.query(Ticket.room).distinct().all()]
+    categories = [c[0] for c in db.session.query(Ticket.category).distinct().all()]
+    filters = dict(request.args)
+
+    return render_template(
+        'admin_panel.html',
+        tickets=tickets,
+        rooms=rooms,
+        categories=categories,
+        filters=filters  # 👈 для фильтрации в JS
+    )
 
 @routes_bp.route('/admin/toggle_done/<int:ticket_id>', methods=['POST'])
 @login_required
