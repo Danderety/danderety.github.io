@@ -1,8 +1,6 @@
 <!DOCTYPE html>
 <html lang="ru">
-
 <head>
-  
   <meta charset="UTF-8">
   <!-- PWA Manifest -->
   <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}">
@@ -13,39 +11,70 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Вход</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='login.css') }}">
+  <style>
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    .checkbox-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 15px;
+    }
+  </style>
 </head>
 
 <body>
-    {% include 'topbar.html' %}
-  
+  {% include 'topbar.html' %}
+
   <div class="container">
     <h2>Вход</h2>
+
     <form method="POST">
-        {% if error %}
+      {% if error %}
         <div class="error-message" id="error-message">Логин или пароль неверный.</div>
         <script>
-            setTimeout(() => {
+          setTimeout(() => {
             const el = document.getElementById('error-message');
             if (el) {
-                el.style.transition = "opacity 0.5s ease";
-                el.style.opacity = 0;
-                setTimeout(() => el.remove(), 500);
+              el.style.transition = "opacity 0.5s ease";
+              el.style.opacity = 0;
+              setTimeout(() => el.remove(), 500);
             }
 
             const url = new URL(window.location);
             url.searchParams.delete('error');
             window.history.replaceState({}, document.title, url);
-            }, 2500);
+          }, 2500);
         </script>
-        {% endif %}
+      {% endif %}
 
       {{ form.hidden_tag() }}
-      {{ form.username.label }} {{ form.username() }}
-      {{ form.password.label }} {{ form.password() }}
-      {{ form.submit() }}
+
+      <div class="form-group">
+        {{ form.username.label }}<br>
+        {{ form.username(class="form-control") }}
+      </div>
+
+      <div class="form-group">
+        {{ form.password.label }}<br>
+        {{ form.password(class="form-control") }}
+      </div>
+
+      <div class="checkbox-group">
+        {{ form.remember_me() }}
+        {{ form.remember_me.label }}
+      </div>
+
+      <div class="form-group">
+        {{ form.submit(class="submit-btn") }}
+      </div>
     </form>
+
     <p>Нет аккаунта? <a href="{{ url_for('routes_bp.register') }}">Зарегистрироваться</a></p>
   </div>
+
   <script>
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('/static/service-worker.js')
@@ -53,7 +82,5 @@
         .catch(err => console.error("❌ Ошибка регистрации Service Worker:", err));
     }
   </script>
-
-
 </body>
 </html>

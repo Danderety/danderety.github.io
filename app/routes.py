@@ -1,10 +1,14 @@
 from flask import Blueprint, render_template, redirect, url_for, request, flash, jsonify
 from flask_login import login_user, logout_user, login_required, current_user
+from app import socketio
+from flask_socketio import emit
+
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime, timedelta
 from app import db
 from app.models import User, Ticket
 from app.forms import LoginForm, RegisterForm, SubmitTicketForm
+
 
 routes_bp = Blueprint('routes_bp', __name__)
 
@@ -14,12 +18,18 @@ def home():
 
 @routes_bp.route('/login', methods=['GET', 'POST'])
 def login():
+    # ⏱ Если уже вошёл — не показывай логин повторно
+    if current_user.is_authenticated:
+        return redirect(url_for('routes_bp.admin_panel') if current_user.is_admin else url_for('routes_bp.submit_ticket'))
+
     form = LoginForm()
 
     if form.validate_on_submit():
         user = User.query.filter_by(username=form.username.data).first()
+        #print(f"📦 Галочка remember_me: {form.remember_me.data}")
         if user and check_password_hash(user.password, form.password.data):
-            login_user(user)
+            #print("🔐 Логин прошёл. remember =", form.remember_me.data)
+            login_user(user, remember=form.remember_me.data)
             return redirect(url_for('routes_bp.admin_panel') if user.is_admin else url_for('routes_bp.submit_ticket'))
         return redirect(url_for('routes_bp.login', error=1))
 
@@ -74,12 +84,22 @@ def submit_ticket():
         )
         db.session.add(ticket)
         db.session.commit()
+
+        # ✅ Отправляем тикет админ-панели по WebSocket
+        socketio.emit('new_ticket', {
+            'id': ticket.id,
+            'room': ticket.room,
+            'category': ticket.category,
+            'problem': ticket.problem,
+            'timestamp': ticket.timestamp.strftime('%Y-%m-%d %H:%M'),
+            'status': ticket.status
+        })
+
         return redirect(url_for('routes_bp.submit_ticket', success=1))
-        
+
     success = request.args.get('success') == '1'
     my_tickets = Ticket.query.filter_by(user_id=current_user.id).order_by(Ticket.timestamp.desc()).limit(10).all()
     return render_template('submit.html', form=form, my_tickets=my_tickets, success=success)
-
 
 
 @routes_bp.route('/admin', methods=['GET'])
@@ -103,6 +123,13 @@ def toggle_done(ticket_id):
     ticket = Ticket.query.get_or_404(ticket_id)
     ticket.status = 'Выполнено' if data.get('done') else 'Выполняется'
     db.session.commit()
+
+    # 🔄 Отправляем обновление статуса всем админам
+    socketio.emit('ticket_updated', {
+        'id': ticket.id,
+        'status': ticket.status
+    })
+
     return '', 204
 
 

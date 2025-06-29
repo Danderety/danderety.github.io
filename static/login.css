@@ -66,6 +66,12 @@ button {
 button:hover {
     background-color: #0056b3;
 }
+.checkbox-group {
+  margin: 10px 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
 
 /* Ошибка */
 .error-message {

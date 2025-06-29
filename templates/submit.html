@@ -6,6 +6,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Отправка тикета</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='submit.css') }}">
+  <style>
+    /* Дополнительная подсветка */
+    .ticket-history li.done {
+      background-color: #d4edda;
+    }
+  </style>
 </head>
 <body>
   {% include 'topbar.html' %}
@@ -31,9 +37,7 @@
             window.history.replaceState({}, document.title, url);
           }, 2000);
         </script>
-
       {% endif %}
-
 
       <form method="POST">
         {{ form.hidden_tag() }}
@@ -58,11 +62,11 @@
       <h3>Мои тикеты</h3>
       <ul class="ticket-history">
         {% for ticket in my_tickets %}
-        <li class="{% if ticket.status == 'Выполнено' %}done{% endif %}">
+        <li class="ticket-item {% if ticket.status == 'Выполнено' %}done{% endif %}" data-id="{{ ticket.id }}">
           <div><strong>Кабинет:</strong> {{ ticket.room }}</div>
           <div><strong>Дата:</strong> {{ ticket.timestamp.strftime('%d.%m.%Y %H:%M') }}</div>
           <div><strong>Категория:</strong> {{ ticket.category }}</div>
-          <div><strong>Статус:</strong> {{ ticket.status }}</div>
+          <div class="ticket-status"><strong>Статус:</strong> <span>{{ ticket.status }}</span></div>
         </li>
         {% else %}
         <li>Вы ещё не отправляли тикеты.</li>
@@ -70,5 +74,26 @@
       </ul>
     </div>
   </div>
+
+  <!-- WebSocket -->
+  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+  <script>
+    const socket = io({ path: '/socket.io', transports: ['websocket'] });
+
+    socket.on('connect', () => {
+      console.log('🟢 WebSocket подключён (submit.html)');
+    });
+
+    socket.on('ticket_updated', (data) => {
+      const ticketItem = document.querySelector(`.ticket-item[data-id="${data.id}"]`);
+      if (ticketItem) {
+        const statusSpan = ticketItem.querySelector('.ticket-status span');
+        if (statusSpan) {
+          statusSpan.textContent = data.status;
+        }
+        ticketItem.classList.toggle('done', data.status === 'Выполнено');
+      }
+    });
+  </script>
 </body>
 </html>
