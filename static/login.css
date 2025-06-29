@@ -66,18 +66,35 @@ button {
 button:hover {
     background-color: #0056b3;
 }
+
 .checkbox-group {
-  margin: 10px 0;
-  display: flex;
-  align-items: center;
-  gap: 8px;
+    margin: 12px 0;
+    display: flex;
+    justify-content: flex-start;
 }
+
+.remember-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 500;
+    white-space: nowrap;
+    
+    cursor: pointer;
+}
+
+.checkbox-group span {
+    position: relative;
+    top: -5px;
+    /* Можно подогнать под основной стиль */
+}
+
+
 
 /* Ошибка */
 .error-message {
     background-color: #f8d7da;
-    border: 1px solid #c0392b;
-    color: #a94442;
+    border: 1px solid #a94442;
     padding: 0.75rem;
     border-radius: 8px;
     margin-bottom: 1rem;
@@ -88,10 +105,11 @@ button:hover {
 
 
 /* Адаптив под телефоны */
-@media (max-width: 480px) {
+@media (max-width: 600px) {
     .container {
         padding: 1.25rem;
         border-radius: 10px;
+        
     }
 
     .container h2 {
@@ -100,5 +118,25 @@ button:hover {
 
     input, button {
         font-size: 0.95rem;
+    }
+   .checkbox-group {
+    margin: 12px 0;
+    display: flex;
+    justify-content: flex-start;
+    }
+
+    .remember-label {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-weight: 400;
+        white-space: nowrap;
+        cursor: pointer;
+    }
+
+    .checkbox-group span {
+        position: relative;
+        top: -5px;
+        /* Можно подогнать под основной стиль */
     }
 }

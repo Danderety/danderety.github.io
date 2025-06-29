@@ -8,21 +8,11 @@
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <link rel="apple-touch-icon" href="{{ url_for('static', filename='icons/image.png') }}">
+  <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='icons/image.png') }}">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Вход</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='login.css') }}">
-  <style>
-    .form-group {
-      margin-bottom: 15px;
-    }
+  <link rel="stylesheet" href="{{ url_for('static', filename='login.css') }}?v=3">
 
-    .checkbox-group {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin-bottom: 15px;
-    }
-  </style>
 </head>
 
 <body>
@@ -63,9 +53,12 @@
       </div>
 
       <div class="checkbox-group">
-        {{ form.remember_me() }}
-        {{ form.remember_me.label }}
+        <label class="remember-label" for="remember_me">
+          {{ form.remember_me(class_="form-check-input") }}
+          <span>{{ form.remember_me.label.text }}</span>
+        </label>
       </div>
+
 
       <div class="form-group">
         {{ form.submit(class="submit-btn") }}
